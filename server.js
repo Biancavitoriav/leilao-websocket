@@ -1,39 +1,28 @@
-const express = require('express');
-const http = require('http');
+//criando a conexão 
 const WebSocket = require('ws');
- 
-const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
- 
-let tasks = [];
- 
-app.use(express.static('public'));
- 
+const wss = new WebSocket.Server({ port: 8080 });
+
+//lista de lances a serem recebidos do html
+let lances = [];
+
 wss.on('connection', (ws) => {
-    console.log('Novo cliente conectado');
- 
-    ws.send(JSON.stringify({ type: 'init', tasks }));
- 
-    ws.on('message', (message) => {
-       
-    });
- 
-    ws.on('close', () => {
-        console.log('Cliente desconectado');
-    });
-});
- 
-function broadcast(data) {
-    const msg = JSON.stringify(data);
+  //eenviando a lista de volta para o html
+  ws.send(JSON.stringify(lances));
+
+  //recebendo as mensagens e guardando
+  ws.on('message', (message) => {
+    const msgStr = message.toString();
+    lances.push(msgStr);
+
+    //convertendo os dados e enviando os lances
+    const json = JSON.stringify(lances);
     wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(msg);
-        }
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(json);
+      }
     });
-}
- 
-server.listen(3000, () => {
-    console.log('Servidor rodando em http://localhost:3000');
+
+  });
 });
- 
+
+console.log('Servidor WebSocket ativo em ws://localhost:8080');
