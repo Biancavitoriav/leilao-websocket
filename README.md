@@ -1,5 +1,7 @@
 ﻿# leilao-websocket
 
+(obs: subi o node_modules sem querer, professor. Desculpa😓)
+
 ### 1. Clone o repositório
 
 ```bash
